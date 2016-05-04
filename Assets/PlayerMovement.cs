@@ -13,10 +13,14 @@ public class PlayerMovement : MonoBehaviour {
 
     bool didHover = false;
     private Rigidbody2D playerRigidBody = null;
+    private Animator animController_Player = null;
+
+    bool playerCollided = false;
 
 
     void Awake() {
         playerRigidBody = GetComponent<Rigidbody2D>();
+        animController_Player = GetComponent<Animator>();
     }
 
     void Update() {
@@ -58,6 +62,9 @@ public class PlayerMovement : MonoBehaviour {
         velocity.x = forwardSpeed;
         velocity += Gravity * Time.deltaTime;
 
+        if (playerCollided)
+            return;
+
         if (didHover) {
             didHover = false;
 
@@ -82,5 +89,16 @@ public class PlayerMovement : MonoBehaviour {
 
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
        
+    }
+
+
+    void OnCollisionEnter2D(Collision2D collision) {
+
+        if(animController_Player != null) {
+            animController_Player.SetTrigger("playerCollision");
+            GetComponent<SpriteRenderer>().color = new Color(255, 0, 0);
+            playerCollided = true;
+        }
+
     }
 }
