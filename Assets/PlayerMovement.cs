@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using UnityEngine.SceneManagement;
 public class PlayerMovement : MonoBehaviour {
 
     Vector3 velocity = Vector3.zero;
@@ -15,7 +15,9 @@ public class PlayerMovement : MonoBehaviour {
     private Rigidbody2D playerRigidBody = null;
     private Animator animController_Player = null;
 
-    bool playerCollided = false;
+    public bool playerCollided = false;
+
+    public Score score = null;
 
 
     void Awake() {
@@ -24,13 +26,36 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     void Update() {
+               
+        
+        if (playerCollided) {
 
-        if(Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) {
+            if (!Score.isHighScoreSet && score != null) {
+
+                score.SetHighScore();
+            }
+
+            if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))) {
+
+
+                if (score.gameOverText != null) {
+                    score.gameOverText.SetActive(false);
+                }
+                
+                Score.totalScore = 0;
+                Score.isHighScoreSet = false;
+                SceneManager.LoadScene("Main");
+                    
+            }
+            
+        }
+
+        if (!playerCollided && (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))) {
             didHover = true;
         }
-        
+
     }
-    
+
     void FixedUpdate() {
         #region rigidBodyAttempt
         //if(playerRigidBody != null) {
@@ -95,10 +120,17 @@ public class PlayerMovement : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D collision) {
 
         if(animController_Player != null) {
+
             animController_Player.SetTrigger("playerCollision");
             GetComponent<SpriteRenderer>().color = new Color(255, 0, 0);
-            playerCollided = true;
-        }
 
+            playerCollided = true;
+
+            if(score.gameOverText != null) {
+                score.gameOverText.SetActive(true);
+            }
+
+        }
     }
+
 }

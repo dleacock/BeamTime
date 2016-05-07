@@ -11,7 +11,7 @@ public class Camera : MonoBehaviour {
 	void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
 
-        if (player != null) {
+        if (player == null) {
             Debug.Log("Player not instanced");
         }
 
